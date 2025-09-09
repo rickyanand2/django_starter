@@ -1,0 +1,72 @@
+{# templates/account/signup.html #}
+{% extends "base.html" %}
+{% load i18n form_extras %}
+{% block title %}Create your account{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row g-4 align-items-stretch">
+    <div class="col-12 col-lg-5 d-flex">
+      <div class="card glass shadow-sm p-3 p-lg-4 flex-grow-1 hover-lift">
+        <h1 class="h3 mb-3">{% trans "Create your account" %}</h1>
+
+        <form method="post" action="{% url 'account_signup' %}" x-data="{ show1:false, show2:false }" novalidate>
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+          <div class="mb-3">
+            <label class="form-label">{% trans "Email" %}</label>
+            {{ form.email|add_class:"form-control" }}
+            {{ form.email.errors }}
+          </div>
+
+          {% if form.username %}
+          <div class="mb-3">
+            <label class="form-label">{% trans "Username (optional)" %}</label>
+            {{ form.username|add_class:"form-control" }}
+            {{ form.username.errors }}
+          </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label">{% trans "Password" %}</label>
+            <div class="input-group">
+              <input :type="show1 ? 'text' : 'password'" name="{{ form.password1.html_name }}" class="form-control" autocomplete="new-password" required>
+              <button class="btn btn-outline-secondary" type="button" @click="show1=!show1">
+                <i class="bi" :class="show1 ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+            {{ form.password1.errors }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">{% trans "Confirm password" %}</label>
+            <div class="input-group">
+              <input :type="show2 ? 'text' : 'password'" name="{{ form.password2.html_name }}" class="form-control" autocomplete="new-password" required>
+              <button class="btn btn-outline-secondary" type="button" @click="show2=!show2">
+                <i class="bi" :class="show2 ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+            {{ form.password2.errors }}
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">{% trans "Create your account" %}</button>
+        </form>
+
+        <hr class="my-4">
+        <p class="mb-0">{% trans "Already have an account?" %} <a href="{% url 'account_login' %}">{% trans "Sign in" %}</a></p>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-7">
+      <div class="p-4 p-lg-5 glass shadow-sm h-100">
+        <h2 class="h4 section-title mb-3">Get started in minutes</h2>
+        <ol class="list-group list-group-numbered">
+          <li class="list-group-item">Invite your vendor with one click</li>
+          <li class="list-group-item">They complete a guided questionnaire</li>
+          <li class="list-group-item">You download a PDF with scores & remediation</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

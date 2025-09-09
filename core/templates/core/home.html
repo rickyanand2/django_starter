@@ -1,0 +1,110 @@
+<!-- core/home.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  VendorGuard – Effortless Vendor Risk Management
+{% endblock %}
+
+{% block content %}
+  <!-- HERO -->
+  <section class="hero py-5 py-lg-6">
+    <div class="container py-3 py-lg-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <span class="eyebrow mb-2">New · PDF-ready risk reports</span>
+          <h1 class="display-5 fw-bold lh-sm mb-3">Effortless Vendor<br />Risk Management</h1>
+          <p class="lead text-body-secondary mb-4">Assess third-party risk in minutes, not weeks. Instant scoring, audit-ready logs, and exportable PDFs.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'account_signup' %}" class="btn btn-brand btn-lg">Get Started Free</a>
+            <a href="{% url 'account_login' %}" class="btn btn-outline-brand btn-lg">See It In Action</a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <img src="{% static 'img/hero-placeholder.png' %}" class="img-fluid rounded-4 shadow-sm" alt="Vendor risk dashboard preview" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUSTED LOGOS -->
+  <section class="py-4">
+    <div class="container text-center">
+      <p class="text-body-secondary mb-3 small">Trusted by councils, SMBs, and health providers</p>
+      <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
+        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 1" />
+        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 2" />
+        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 3" />
+        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 4" />
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="h4 text-center section-title mb-4">Feature Highlights</h2>
+      <div class="row g-4">
+        <div class="col-6 col-lg-3">
+          <div class="card-soft p-4 h-100 hover-lift text-center">
+            <i class="bi bi-shield-lock text-primary fs-2 mb-2"></i>
+            <p class="mb-0 fw-medium">Auto Risk Scoring</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card-soft p-4 h-100 hover-lift text-center">
+            <i class="bi bi-file-earmark-text text-primary fs-2 mb-2"></i>
+            <p class="mb-0 fw-medium">PDF Reports</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card-soft p-4 h-100 hover-lift text-center">
+            <i class="bi bi-journal-check text-primary fs-2 mb-2"></i>
+            <p class="mb-0 fw-medium">Smart Questionnaire</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card-soft p-4 h-100 hover-lift text-center">
+            <i class="bi bi-clipboard-data text-primary fs-2 mb-2"></i>
+            <p class="mb-0 fw-medium">Audit-Ready Logs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="h4 text-center section-title mb-5">How It Works</h2>
+      <div class="row text-center g-4">
+        <div class="col-md-4">
+          <div class="d-inline-flex mb-2 step">1</div>
+          <h6 class="fw-semibold">Invite Vendor</h6>
+          <p class="text-body-secondary mb-0">Send a secure link via email</p>
+        </div>
+        <div class="col-md-4">
+          <div class="d-inline-flex mb-2 step">2</div>
+          <h6 class="fw-semibold">Complete Questionnaire</h6>
+          <p class="text-body-secondary mb-0">Guided workflow for faster turnaround</p>
+        </div>
+        <div class="col-md-4">
+          <div class="d-inline-flex mb-2 step">3</div>
+          <h6 class="fw-semibold">Download PDF</h6>
+          <p class="text-body-secondary mb-0">Score, evidence and remediation notes</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-5">
+    <div class="container">
+      <div class="card-soft p-4 p-md-5 text-center">
+        <h3 class="h4 mb-2">Ready to reduce vendor risk?</h3>
+        <p class="text-body-secondary mb-4">Start free. No credit card required.</p>
+        <a href="{% url 'account_signup' %}" class="btn btn-brand btn-lg">Create Account</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

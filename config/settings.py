@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     # local apps
     "core",
+    "accounts",
 ] + (["debug_toolbar"] if DEBUG else [])
 
 # ---------- Middleware ----------
@@ -148,6 +149,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 """
 
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
 ACCOUNT_LOGIN_METHODS = {"email"}
 
 # Fields collected on the signup form.
@@ -155,18 +162,14 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 
 
-ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "optional")
-
+# ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "optional")
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # Login redirect URL
-LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", "home")
-LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL", "home")
+LOGIN_REDIRECT_URL = "/"
+# Logout redirect URL
+LOGOUT_REDIRECT_URL = "/"
 
-
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -204,13 +207,24 @@ MEDIAFILES_DIRS = [BASE_DIR / "media"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") == "1"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 
+# Show the "remember me" checkbox on the login form
+# ACCOUNT_SESSION_REMEMBER = False
+""" 
 # ---------- Email (Mailpit in dev) ----------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") == "1"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
+"""
 
 # ---------- Debug toolbar ----------
 INTERNAL_IPS = ["127.0.0.1", "localhost"]

@@ -1,0 +1,41 @@
+{# templates/includes/_form.html #}
+{% comment %}Usage:{% include 'includes/_form.html' with form=form action=request.path submit_label='Save' method='post' cancel_href='/' %}
+{% endcomment %}
+{% load form_extras %}
+<form method="{{ method|default:'post' }}" action="{{ action|default:request.path }}" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  {% for field in form %}
+    {% if field|widget_type == 'checkbox' %}
+      <div class="form-check mb-3">
+        {{ field|add_class:'form-check-input' }}
+        <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% for err in field.errors %}
+          <div class="invalid-feedback d-block">{{ err }}</div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field|add_class:'form-control' }}
+        {% if field.help_text %}
+          <div class="form-text">{{ field.help_text }}</div>
+        {% endif %}
+        {% for err in field.errors %}
+          <div class="invalid-feedback d-block">{{ err }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" type="submit">{{ submit_label|default:'Submit' }}</button>
+    {% if cancel_href %}
+      <a class="btn btn-secondary" href="{{ cancel_href }}">Cancel</a>
+    {% endif %}
+  </div>
+</form>

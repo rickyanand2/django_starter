@@ -2,13 +2,12 @@
 
 from django.contrib import admin
 from django.urls import path, include
-from core.views import home
 from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("accounts/", include("allauth.urls")),
-    path("", home, name="home"),
+    path("accounts/", include("accounts.urls")),  # wraps allauth
+    path("", include("core.urls", namespace="core")),
 ]
 
 if settings.DEBUG:

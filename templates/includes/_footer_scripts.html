@@ -1,0 +1,36 @@
+{# templates/includes/_footer_scripts.html #}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+<!-- Alpine.js -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+  // Attach Django CSRF token to all HTMX requests
+  ;(function () {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content
+    if (!csrf) return
+    document.body.addEventListener('htmx:configRequest', (evt) => {
+      evt.detail.headers['X-CSRFToken'] = csrf
+    })
+  })()
+</script>
+
+<script>
+
+  // CSRF for HTMX
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+  document.body.addEventListener('htmx:configRequest', (e) => { if(csrf) e.detail.headers['X-CSRFToken'] = csrf; });
+
+  // Alpine theme toggler
+  function themeToggler(){
+    return {
+      theme: localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'),
+      init(){ this.apply(); },
+      toggle(){ this.theme = (this.theme === 'light') ? 'dark':'light'; this.apply(); },
+      apply(){ document.documentElement.setAttribute('data-bs-theme', this.theme); localStorage.setItem('theme', this.theme); }
+    }
+  }
+</script>
