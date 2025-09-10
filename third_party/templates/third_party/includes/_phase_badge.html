@@ -1,0 +1,15 @@
+{% with p=obj.phase %}
+  {% if p == 'DRAFT' %}
+    <span class="badge bg-secondary">Draft</span>
+  {% elif p == 'IN_REVIEW' %}
+    <span class="badge bg-warning text-dark">In review</span>
+  {% elif p == 'APPROVED' %}
+    <span class="badge bg-success">Approved</span>
+  {% elif p == 'REJECTED' %}
+    <span class="badge bg-danger">Rejected</span>
+  {% elif p == 'ONBOARDING' %}
+    <span class="badge bg-info text-dark">Onboarding</span>
+  {% else %}
+    <span class="badge bg-primary">Complete</span>
+  {% endif %}
+{% endwith %}

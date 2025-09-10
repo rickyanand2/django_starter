@@ -3,6 +3,7 @@
 from pathlib import Path
 import os
 import dj_database_url
+import sys
 
 # NEW: load .env early (if installed)
 try:
@@ -60,12 +61,16 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     # Third-party apps
     "django_htmx",
+    # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    # Workflow apps
+    "viewflow",
     # local apps
     "core",
     "accounts",
+    "third_party",
 ] + (["debug_toolbar"] if DEBUG else [])
 
 # ---------- Middleware ----------
@@ -166,9 +171,10 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # Login redirect URL
-LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "third_party:request_list"  # after login → app shell
 # Logout redirect URL
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "core:home"
 
 
 # Internationalization
@@ -241,3 +247,32 @@ if not DEBUG:
         os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "0") == "1"
     )
     SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "0") == "1"
+
+
+# UPDATE FOR TESTS ###############
+# Detect if we're running tests
+TESTING = any(arg in sys.argv for arg in ["test", "pytest"])
+
+if TESTING:
+    # 1) Use non-manifest static storage so tests don't need collectstatic
+    # (Django 4.2+/5.x STORAGES API)
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+
+    # 2) Strip middleware that depends on INSTALLED_APPS entries
+    MIDDLEWARE = [
+        mw
+        for mw in MIDDLEWARE
+        if mw
+        not in (
+            "whitenoise.middleware.WhiteNoiseMiddleware",
+            "debug_toolbar.middleware.DebugToolbarMiddleware",
+        )
+    ]
+
+    # 3) Remove debug toolbar app entirely in tests
+    INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "debug_toolbar"]

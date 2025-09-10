@@ -1,0 +1,83 @@
+{# expects: obj, workflow, current_idx, users, allowed #}
+<div class="card mb-3">
+  <div class="card-body py-3">
+    <div class="d-flex align-items-center flex-wrap gap-3">
+      {% for step in workflow %}
+        <div class="d-flex align-items-center">
+          <div class="dot {% if forloop.counter0 < current_idx %}done{% elif forloop.counter0 == current_idx %}active{% endif %}"></div>
+          <div class="ms-2 small text-nowrap">
+            {{ step|title|cut:"_" }}
+          </div>
+        </div>
+        {% if not forloop.last %}<div class="connector"></div>{% endif %}
+      {% endfor %}
+      <span class="ms-auto small text-muted">
+        Assigned: {{ obj.assignee.get_full_name|default:obj.assignee|default:"—" }}
+        </span>
+
+    </div>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+  {% if "submit" in allowed %}
+    <form hx-post="{% url 'third_party:request_transition' obj.pk %}" hx-target="#request-panel" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="submit">
+      <button class="btn btn-primary btn-sm">Send for review</button>
+    </form>
+  {% endif %}
+
+  {% if "assign" in allowed %}
+    <form class="d-flex align-items-center gap-2"
+          hx-post="{% url 'third_party:request_transition' obj.pk %}"
+          hx-target="#request-panel" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="assign">
+      <select class="form-select form-select-sm" name="assignee_id" style="width:auto">
+        <option value="">— Unassigned —</option>
+        {% for u in users %}
+          <option value="{{ u.id }}" {% if obj.assignee_id == u.id %}selected{% endif %}>{{ u.get_full_name|default:u.username }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-outline-secondary btn-sm">Assign</button>
+    </form>
+  {% endif %}
+
+  {% if "approve" in allowed %}
+    <form hx-post="{% url 'third_party:request_transition' obj.pk %}" hx-target="#request-panel" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="approve">
+      <button class="btn btn-success btn-sm">Approve</button>
+    </form>
+  {% endif %}
+  {% if "reject" in allowed %}
+    <form hx-post="{% url 'third_party:request_transition' obj.pk %}" hx-target="#request-panel" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="reject">
+      <button class="btn btn-danger btn-sm">Reject</button>
+    </form>
+  {% endif %}
+
+  {% if "start_onboarding" in allowed %}
+    <form hx-post="{% url 'third_party:request_transition' obj.pk %}" hx-target="#request-panel" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="start_onboarding">
+      <button class="btn btn-primary btn-sm">Start onboarding</button>
+    </form>
+  {% endif %}
+  {% if "complete" in allowed %}
+    <form hx-post="{% url 'third_party:request_transition' obj.pk %}" hx-target="#request-panel" hx-swap="outerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="complete">
+      <button class="btn btn-outline-primary btn-sm">Mark complete</button>
+    </form>
+  {% endif %}
+</div>
+
+<style>
+  .dot{width:12px;height:12px;border-radius:50%;background:#dee2e6;border:1px solid #ced4da}
+  .dot.active{background:#0d6efd;border-color:#0d6efd}
+  .dot.done{background:#20c997;border-color:#20c997}
+  .connector{width:36px;height:2px;background:#e9ecef;margin:0 4px}
+</style>
