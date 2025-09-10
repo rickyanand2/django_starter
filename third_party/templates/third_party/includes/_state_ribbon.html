@@ -1,0 +1,20 @@
+{# third_party/includes/_state_ribbon.html #}
+<div class="d-flex align-items-center gap-2 small">
+  {% for key, label in object.States.choices %}
+    <span class="badge rounded-pill
+      {% if object.state.name == key %}
+        
+        text-bg-primary
+
+      {% else %}
+        
+        text-bg-light
+
+      {% endif %}">
+      {{ label }}
+    </span>
+    {% if not forloop.last %}
+      <i class="bi bi-chevron-right text-muted"></i>
+    {% endif %}
+  {% endfor %}
+</div>

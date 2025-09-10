@@ -1,109 +1,168 @@
-<!-- core/home.html -->
-{% extends 'base.html' %}
+{# core/home.html #}
+{% extends 'base_site.html' %}
 {% load static %}
 
 {% block title %}
   VendorGuard – Effortless Vendor Risk Management
 {% endblock %}
 
+{% block head_extra %}
+  <meta name="description" content="Assess third-party risk in minutes, with instant scoring, audit-ready logs and exportable PDFs." />
+  <meta property="og:title" content="VendorGuard – Effortless Vendor Risk Management" />
+  <meta property="og:description" content="Assess third-party risk in minutes, with instant scoring, audit-ready logs and exportable PDFs." />
+  <meta property="og:image" content="{% static 'img/og-hero.png' %}" />
+{% endblock %}
+
 {% block content %}
-  <!-- HERO -->
-  <section class="hero py-5 py-lg-6">
+  {# ===================== HERO ===================== #}
+  <section class="py-5 py-lg-6 bg-body-tertiary border-bottom">
     <div class="container py-3 py-lg-5">
-      <div class="row align-items-center g-4">
+      <div class="row align-items-center g-4 g-lg-5">
         <div class="col-lg-6">
-          <span class="eyebrow mb-2">New · PDF-ready risk reports</span>
+          <span class="badge text-bg-primary-subtle border border-primary-subtle mb-3">New · PDF-ready risk reports</span>
           <h1 class="display-5 fw-bold lh-sm mb-3">Effortless Vendor<br />Risk Management</h1>
-          <p class="lead text-body-secondary mb-4">Assess third-party risk in minutes, not weeks. Instant scoring, audit-ready logs, and exportable PDFs.</p>
-          <div class="d-flex flex-wrap gap-2">
-            <a href="{% url 'account_signup' %}" class="btn btn-brand btn-lg">Get Started Free</a>
-            <a href="{% url 'account_login' %}" class="btn btn-outline-brand btn-lg">See It In Action</a>
-          </div>
+          <p class="lead text-body-secondary mb-4">Assess third-party risk in minutes—not weeks. Instant scoring, audit-ready logs, and exportable PDFs.</p>
+
+          {% if user.is_authenticated %}
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-primary btn-lg" href="{% url 'third_party:request_list' %}">Go to Dashboard</a>
+              <a class="btn btn-outline-secondary btn-lg" href="{% url 'third_party:request_create' %}">New Vendor Request</a>
+            </div>
+          {% else %}
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-primary btn-lg" href="{% url 'account_signup' %}">Get Started Free</a>
+              <a class="btn btn-outline-secondary btn-lg" href="{% url 'account_login' %}">See It In Action</a>
+            </div>
+          {% endif %}
         </div>
+
         <div class="col-lg-6 text-center">
-          <img src="{% static 'img/hero-placeholder.png' %}" class="img-fluid rounded-4 shadow-sm" alt="Vendor risk dashboard preview" />
+          <img src="{% static 'img/hero-dashboard.png' %}" alt="Vendor risk dashboard preview" class="img-fluid rounded-4 shadow-sm border" />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- TRUSTED LOGOS -->
+  {# ===================== TRUST BAR ===================== #}
   <section class="py-4">
     <div class="container text-center">
       <p class="text-body-secondary mb-3 small">Trusted by councils, SMBs, and health providers</p>
-      <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
-        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 1" />
-        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 2" />
-        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 3" />
-        <img class="logo-item" src="https://placehold.co/140x50" alt="Logo 4" />
+      <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap opacity-75">
+        <img src="{% static 'img/logos/logo-1.svg' %}" alt="Logo 1" height="28" />
+        <img src="{% static 'img/logos/logo-2.svg' %}" alt="Logo 2" height="28" />
+        <img src="{% static 'img/logos/logo-3.svg' %}" alt="Logo 3" height="28" />
+        <img src="{% static 'img/logos/logo-4.svg' %}" alt="Logo 4" height="28" />
       </div>
     </div>
   </section>
 
-  <!-- FEATURES -->
+  {# ===================== FEATURES ===================== #}
   <section class="py-5">
     <div class="container">
-      <h2 class="h4 text-center section-title mb-4">Feature Highlights</h2>
+      <h2 class="h4 text-center fw-semibold mb-4">Feature Highlights</h2>
+
       <div class="row g-4">
         <div class="col-6 col-lg-3">
-          <div class="card-soft p-4 h-100 hover-lift text-center">
-            <i class="bi bi-shield-lock text-primary fs-2 mb-2"></i>
-            <p class="mb-0 fw-medium">Auto Risk Scoring</p>
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-4">
+              <i class="bi bi-shield-lock fs-2 text-primary mb-2"></i>
+              <div class="fw-medium">Auto Risk Scoring</div>
+              <div class="small text-body-secondary mt-1">Weighted, explainable metrics.</div>
+            </div>
           </div>
         </div>
+
         <div class="col-6 col-lg-3">
-          <div class="card-soft p-4 h-100 hover-lift text-center">
-            <i class="bi bi-file-earmark-text text-primary fs-2 mb-2"></i>
-            <p class="mb-0 fw-medium">PDF Reports</p>
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-4">
+              <i class="bi bi-file-earmark-text fs-2 text-primary mb-2"></i>
+              <div class="fw-medium">PDF Reports</div>
+              <div class="small text-body-secondary mt-1">Audit-ready, branded exports.</div>
+            </div>
           </div>
         </div>
+
         <div class="col-6 col-lg-3">
-          <div class="card-soft p-4 h-100 hover-lift text-center">
-            <i class="bi bi-journal-check text-primary fs-2 mb-2"></i>
-            <p class="mb-0 fw-medium">Smart Questionnaire</p>
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-4">
+              <i class="bi bi-journal-check fs-2 text-primary mb-2"></i>
+              <div class="fw-medium">Smart Questionnaire</div>
+              <div class="small text-body-secondary mt-1">Adaptive, HTMX-powered forms.</div>
+            </div>
           </div>
         </div>
+
         <div class="col-6 col-lg-3">
-          <div class="card-soft p-4 h-100 hover-lift text-center">
-            <i class="bi bi-clipboard-data text-primary fs-2 mb-2"></i>
-            <p class="mb-0 fw-medium">Audit-Ready Logs</p>
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-4">
+              <i class="bi bi-clipboard-data fs-2 text-primary mb-2"></i>
+              <div class="fw-medium">Evidence & Logs</div>
+              <div class="small text-body-secondary mt-1">Tamper-evident activity trails.</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="py-5">
+  {# ===================== HOW IT WORKS ===================== #}
+  <section class="py-5 border-top">
     <div class="container">
-      <h2 class="h4 text-center section-title mb-5">How It Works</h2>
-      <div class="row text-center g-4">
+      <h2 class="h4 text-center fw-semibold mb-5">How It Works</h2>
+
+      <div class="row text-center g-4 g-lg-5">
         <div class="col-md-4">
-          <div class="d-inline-flex mb-2 step">1</div>
-          <h6 class="fw-semibold">Invite Vendor</h6>
-          <p class="text-body-secondary mb-0">Send a secure link via email</p>
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width:48px;height:48px;">1</div>
+          <h6 class="fw-semibold mb-1">Invite Vendor</h6>
+          <p class="text-body-secondary small mb-0">Send a secure link by email.</p>
         </div>
         <div class="col-md-4">
-          <div class="d-inline-flex mb-2 step">2</div>
-          <h6 class="fw-semibold">Complete Questionnaire</h6>
-          <p class="text-body-secondary mb-0">Guided workflow for faster turnaround</p>
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width:48px;height:48px;">2</div>
+          <h6 class="fw-semibold mb-1">Complete Questionnaire</h6>
+          <p class="text-body-secondary small mb-0">Guided workflow; auto scoring.</p>
         </div>
         <div class="col-md-4">
-          <div class="d-inline-flex mb-2 step">3</div>
-          <h6 class="fw-semibold">Download PDF</h6>
-          <p class="text-body-secondary mb-0">Score, evidence and remediation notes</p>
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width:48px;height:48px;">3</div>
+          <h6 class="fw-semibold mb-1">Download PDF</h6>
+          <p class="text-body-secondary small mb-0">Score, evidence, and actions.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
+  {# ===================== SECURITY RIBBON ===================== #}
   <section class="py-5">
     <div class="container">
-      <div class="card-soft p-4 p-md-5 text-center">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-4 p-lg-5 rounded-4 border bg-body">
+            <h3 class="h5 fw-semibold mb-2">Built-in Compliance</h3>
+            <p class="text-body-secondary mb-0">Map findings to ISO 27001, SOC 2, and essential eight—export actions for remediation tracking.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-4 p-lg-5 rounded-4 border bg-body">
+            <h3 class="h5 fw-semibold mb-2">Privacy by Design</h3>
+            <p class="text-body-secondary mb-0">Data minimisation, role-based access, and signed evidence uploads.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ===================== CTA ===================== #}
+  <section class="py-5 border-top">
+    <div class="container">
+      <div class="p-4 p-md-5 rounded-4 border bg-body text-center shadow-sm">
         <h3 class="h4 mb-2">Ready to reduce vendor risk?</h3>
         <p class="text-body-secondary mb-4">Start free. No credit card required.</p>
-        <a href="{% url 'account_signup' %}" class="btn btn-brand btn-lg">Create Account</a>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'third_party:request_create' %}" class="btn btn-primary btn-lg">Create Your First Vendor Request</a>
+        {% else %}
+          <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg me-2">Create Account</a>
+          <a href="{% url 'account_login' %}" class="btn btn-outline-secondary btn-lg">Log In</a>
+        {% endif %}
       </div>
     </div>
   </section>

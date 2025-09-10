@@ -1,0 +1,42 @@
+{% extends 'base_app.html' %}
+{% block app_title %}
+  Vendor Requests
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h5 mb-0">Vendor Requests</h1>
+    <a href="{% url 'third_party:request_create' %}" class="btn btn-primary btn-sm">New Request</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for obj in requests %}
+          <tr>
+            <td class="text-truncate" style="max-width:360px">{{ obj.name }}</td>
+            <td>
+              {% include 'third_party/includes/_phase_badge.html' with obj=obj %}
+            </td>
+            <td>{{ obj.created_at|date:'Y-m-d H:i' }}</td>
+            <td class="text-end">
+              <a href="{% url 'third_party:request_detail' obj.pk %}" class="btn btn-outline-secondary btn-sm">Open</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-body-secondary py-5">No requests yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

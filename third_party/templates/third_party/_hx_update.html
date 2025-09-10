@@ -1,0 +1,10 @@
+<!-- templates/third_party/_hx_update.html -->
+
+<div id="workflow-actions" hx-target="this" hx-swap="outerHTML">{{ actions|safe }}</div>
+<script>
+  // Also swap the status badge region
+  const badgeTarget = document.getElementById('status-badge')
+  if (badgeTarget) {
+    badgeTarget.innerHTML = `{{ badge|escapejs }}`.replaceAll('\\u003C', '<')
+  }
+</script>

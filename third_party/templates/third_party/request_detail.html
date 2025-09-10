@@ -1,0 +1,24 @@
+{% extends 'base_app.html' %}
+
+{% block app_title %}
+  Vendor Request · {{ obj.name }}
+{% endblock %}
+
+{% block content %}
+  <div id="request-panel">
+    {% include 'third_party/includes/_request_panel.html' %}
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">{{ obj.name }}</dd>
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">{% include 'third_party/includes/_phase_badge.html' with obj=obj %}</dd>
+        <dt class="col-sm-3">Created</dt>
+        <dd class="col-sm-9">{{ obj.created_at|date:'Y-m-d H:i' }}</dd>
+      </dl>
+    </div>
+  </div>
+{% endblock %}
