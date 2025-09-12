@@ -1,29 +1,38 @@
-# docker-compose.yml
 services:
   db:
-    image: postgres:16-alpine
-    container_name: dj_db
+    image: postgres:16
     environment:
-      POSTGRES_DB: appdb
-      POSTGRES_USER: appuser
-      POSTGRES_PASSWORD: apppass
-      
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
       interval: 5s
       timeout: 5s
       retries: 20
 
-  mail:
-    image: axllent/mailpit:latest
-    container_name: dj_mail
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "
+      python manage.py migrate_schemas --shared &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    env_file:
+      - config/.env
     ports:
-      - "8025:8025"  # Web UI
-      - "1025:1025"  # SMTP
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:

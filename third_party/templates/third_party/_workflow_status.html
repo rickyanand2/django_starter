@@ -25,20 +25,28 @@
     {% with idx=object.state_index %}
       <div class="vg-step {% if idx > 0 %}
           
+          
           vg-step--done
+
 
         {% elif idx == 0 and object.state != 'REJECTED' %}
           
+          
           vg-step--active
+
 
         {% endif %}">
         <i class="bi {% if idx > 0 %}
             
+            
             bi-check-circle-fill
+
 
           {% else %}
             
+            
             bi-flag
+
 
           {% endif %}">
 
@@ -52,20 +60,28 @@
       {# 1: Review (REVIEW) #}
       <div class="vg-step {% if idx > 1 %}
           
+          
           vg-step--done
+
 
         {% elif idx == 1 and object.state != 'REJECTED' %}
           
+          
           vg-step--active
+
 
         {% endif %}">
         <i class="bi {% if idx > 1 %}
             
+            
             bi-check-circle-fill
+
 
           {% else %}
             
+            
             bi-search
+
 
           {% endif %}">
 
@@ -80,11 +96,15 @@
       <div class="vg-step {% if idx == 2 and object.state != 'REJECTED' %}vg-step--active{% endif %}">
         <i class="bi {% if object.state == 'APPROVED' %}
             
+            
             bi-check2-circle
+
 
           {% else %}
             
+            
             bi-patch-check
+
 
           {% endif %}">
 

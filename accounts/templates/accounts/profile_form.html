@@ -1,25 +1,35 @@
-{% load form_extras %}
-<form method="post" action="{% url 'profile' %}" class="row g-3" novalidate>
-  {% csrf_token %}
-  <div class="col-md-6">
-    <label class="form-label">First name</label>
-    {{ form.first_name|add_class:'form-control' }}
-    {{ form.first_name.errors }}
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Last name</label>
-    {{ form.last_name|add_class:'form-control' }}
-    {{ form.last_name.errors }}
-  </div>
-  <div class="col-12">
-    <label class="form-label">Email</label>
-    {{ form.email|add_class:'form-control' }}
-    <div class="form-text">
-      Email add/verify lives under <a href="{% url 'account_email' %}">Accounts → Email</a>.
+{# templates/accounts/profile_form.html #}
+{% extends 'base_auth.html' %}
+{% load i18n ui_extras %}
+
+{% block title %}
+  {% trans 'Edit profile' %}– VendorGuard
+{% endblock %}
+
+{% block content %}
+  <h1 class="h4 mb-3">{% trans 'Edit profile' %}</h1>
+  <form method="post" action="{% url 'accounts:profile' %}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="mb-3">
+      <label class="form-label" for="id_job_title">{% trans 'Job title' %}</label>
+      {{ form.job_title|add_class:'form-control' }}
+      {{ form.job_title.errors }}
     </div>
-  </div>
-  <div class="col-12 d-flex gap-2">
-    <button class="btn btn-primary" type="submit">Save changes</button>
-    <a class="btn btn-outline-secondary" href="{% url 'settings' %}">Cancel</a>
-  </div>
-</form>
+    <div class="mb-3">
+      <label class="form-label" for="id_phone">{% trans 'Phone' %}</label>
+      {{ form.phone|add_class:'form-control' }}
+      {{ form.phone.errors }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="id_country">{% trans 'Country' %}</label>
+      {{ form.country|add_class:'form-control' }}
+      {{ form.country.errors }}
+    </div>
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'accounts:settings' %}" class="btn btn-outline-secondary">{% trans 'Cancel' %}</a>
+      <button type="submit" class="btn btn-primary">{% trans 'Save changes' %}</button>
+    </div>
+  </form>
+{% endblock %}

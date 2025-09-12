@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import os
-import dj_database_url
 import sys
 
 # NEW: load .env early (if installed)
@@ -50,32 +49,40 @@ SITE_ID = int(os.getenv("SITE_ID", "1"))
 
 # ---------- Installed apps ----------
 
-INSTALLED_APPS = [
-    # Django apps
-    "django.contrib.admin",
-    "django.contrib.auth",
+SHARED_APPS = [
+    "django_tenants",  # must be first
     "django.contrib.contenttypes",
+    "django.contrib.auth",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.admin",
     "django.contrib.sites",
-    # Third-party apps
-    "django_htmx",
     # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # Workflow apps
-    "django_fsm",  # django-fsm-2
-    "django_fsm_log",  # transition logging
-    # local apps
+    "django_htmx",  # htmx integration
+    # django-fsm-2
+    "django_fsm",
+    "django_fsm_log",
     "core",
+]
+TENANT_APPS = [
+    # your per-tenant apps (add as you go)
     "accounts",
     "third_party",
-] + (["debug_toolbar"] if DEBUG else [])
+]
+INSTALLED_APPS = (SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]) + (
+    ["debug_toolbar"] if DEBUG else []
+)
+
+# ---------- End Installed apps ----------
 
 # ---------- Middleware ----------
 MIDDLEWARE = [
+    # Must be first for django-tenants
+    "django_tenants.middleware.main.TenantMainMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -118,6 +125,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # ---------- Database ----------
+DATABASES = {
+    "default": {
+        "ENGINE": "django_tenants.postgresql_backend",
+        "NAME": os.getenv("POSTGRES_DB", "app"),
+        "USER": os.getenv("POSTGRES_USER", "app"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "app"),
+        "HOST": os.getenv("POSTGRES_HOST", "db"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+    }
+}
+
+""" 
+# Working database with sqlite fallback
 
 # Use dj_database_url to parse the DATABASE_URL environment variable
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
@@ -131,7 +151,15 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+"""
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
+PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
+ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
+
+# Tenant settings
+TENANT_MODEL = "core.Client"  # app.Model that contains the tenant info
+DOMAIN_MODEL = "core.Domain"  # app.Model for domain names
 # ---------- End Database ----------
 
 
