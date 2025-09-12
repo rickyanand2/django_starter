@@ -5,7 +5,10 @@ from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Keep Allauth names like 'account_login' available (what your templates/tests use)
     path("accounts/", include("allauth.urls")),
+    # Your app-specific views (namespaced as 'accounts:settings', 'accounts:profile', etc.)
+    path("accounts/", include(("accounts.urls", "accounts"), namespace="accounts")),
     path("", include("core.urls")),
     path(
         "third-party/",
