@@ -14,8 +14,31 @@
 
     <div class="section-title">Third-party</div>
     <nav class="nav flex-column">
-      <a class="nav-link {% if request.resolver_match.namespace == 'third_party' and request.resolver_match.url_name == 'request_list' %}active{% endif %}" href="{% url 'third_party:request_list' %}"><i class="bi bi-journal-text"></i> Vendor Requests</a>
-      <a class="nav-link {% if request.resolver_match.namespace == 'third_party' and request.resolver_match.url_name == 'request_create' %}active{% endif %}" href="{% url 'third_party:request_create' %}"><i class="bi bi-plus-circle"></i> New Request</a>
+      {# ... within the THIRD-PARTY section ... #}
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_list' %}active{% endif %}" href="{% url 'third_party:request_list' %}"><i class="bi bi-table"></i> Vendor Requests</a>
+      </li>
+
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_create' %}active{% endif %}" href="{% url 'third_party:request_create' %}"><i class="bi bi-plus-circle"></i> New Request</a>
+      </li>
+
+      <li class="section-title">By Phase</li>
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_list_draft' %}active{% endif %}" href="{% url 'third_party:request_list_draft' %}"><i class="bi bi-flag"></i> Draft</a>
+      </li>
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_list_review' %}active{% endif %}" href="{% url 'third_party:request_list_review' %}"><i class="bi bi-search"></i> Review</a>
+      </li>
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_list_approved' %}active{% endif %}" href="{% url 'third_party:request_list_approved' %}"><i class="bi bi-patch-check"></i> Approved</a>
+      </li>
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_list_rejected' %}active{% endif %}" href="{% url 'third_party:request_list_rejected' %}"><i class="bi bi-x-octagon"></i> Rejected</a>
+      </li>
+      <li>
+        <a class="nav-link {% if request.resolver_match.url_name == 'request_list_assigned' %}active{% endif %}" href="{% url 'third_party:request_list_assigned' %}"><i class="bi bi-person-check"></i> Assigned to me</a>
+      </li>
     </nav>
 
     <div class="section-title">Assessments</div>

@@ -9,6 +9,8 @@ django-htmx>=1.18
 django-debug-toolbar>=4.4
 gunicorn>=21.2
 python-dotenv
+django-fsm-2
+django-fsm-log
 
 # Dev & test
 pytest>=8

@@ -1,0 +1,109 @@
+<!-- thirdparty/templates/_workflow_status.html -->
+{% load static %}
+
+<div class="vg-stepper">
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="h6 mb-0">Workflow</div>
+    <div class="text-secondary small">
+      {% if object.state == 'ONBOARDING' %}
+        Draft
+      {% elif object.state == 'REVIEW' %}
+        In Review
+      {% elif object.state == 'APPROVED' %}
+        Approved
+      {% elif object.state == 'REJECTED' %}
+        Rejected
+      {% else %}
+        Unknown
+      {% endif %}
+    </div>
+  </div>
+
+  {# Step tiles #}
+  <div class="vg-steps">
+    {# 0: Draft (ONBOARDING) #}
+    {% with idx=object.state_index %}
+      <div class="vg-step {% if idx > 0 %}
+          
+          vg-step--done
+
+        {% elif idx == 0 and object.state != 'REJECTED' %}
+          
+          vg-step--active
+
+        {% endif %}">
+        <i class="bi {% if idx > 0 %}
+            
+            bi-check-circle-fill
+
+          {% else %}
+            
+            bi-flag
+
+          {% endif %}">
+
+        </i>
+        <div class="vg-step-label">
+          Draft
+          <span class="vg-step-sub">Create & assign</span>
+        </div>
+      </div>
+
+      {# 1: Review (REVIEW) #}
+      <div class="vg-step {% if idx > 1 %}
+          
+          vg-step--done
+
+        {% elif idx == 1 and object.state != 'REJECTED' %}
+          
+          vg-step--active
+
+        {% endif %}">
+        <i class="bi {% if idx > 1 %}
+            
+            bi-check-circle-fill
+
+          {% else %}
+            
+            bi-search
+
+          {% endif %}">
+
+        </i>
+        <div class="vg-step-label">
+          Review
+          <span class="vg-step-sub">Validation</span>
+        </div>
+      </div>
+
+      {# 2: Approved (APPROVED) #}
+      <div class="vg-step {% if idx == 2 and object.state != 'REJECTED' %}vg-step--active{% endif %}">
+        <i class="bi {% if object.state == 'APPROVED' %}
+            
+            bi-check2-circle
+
+          {% else %}
+            
+            bi-patch-check
+
+          {% endif %}">
+
+        </i>
+        <div class="vg-step-label">
+          Approved
+          <span class="vg-step-sub">Finalized</span>
+        </div>
+      </div>
+    {% endwith %}
+  </div>
+
+  {# If rejected, show banner below the stepper (we keep “Approved” step visible but not active) #}
+  {% if object.state == 'REJECTED' %}
+    <div class="vg-rejected mt-2">
+      <i class="bi bi-x-octagon-fill"></i>
+      Rejected{% if object.reject_reason %}
+        : {{ object.reject_reason }}
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
