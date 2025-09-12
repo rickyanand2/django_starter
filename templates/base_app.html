@@ -40,21 +40,23 @@
         {% include 'includes/_messages.html' %}
 
         <div class="container-fluid px-3">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h1 class="h5 mb-0">
-              {% block page_title %}
+          {% block page_container %}
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h1 class="h5 mb-0">
+                {% block page_title %}
 
-              {% endblock %}
-            </h1>
-            <div>
-              {% block page_actions %}
+                {% endblock %}
+              </h1>
+              <div>
+                {% block page_actions %}
 
-              {% endblock %}
+                {% endblock %}
+              </div>
             </div>
-          </div>
 
-          {% block content %}
+            {% block content %}
 
+            {% endblock %}
           {% endblock %}
         </div>
       </main>

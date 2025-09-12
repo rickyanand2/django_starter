@@ -66,7 +66,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     # Workflow apps
-    "viewflow",
+    "django_fsm",  # django-fsm-2
+    "django_fsm_log",  # transition logging
     # local apps
     "core",
     "accounts",
@@ -122,6 +123,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if DATABASE_URL:
     DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+
 else:
     DATABASES = {
         "default": {
@@ -232,7 +234,9 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") == "1"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 """
 
+############################################################################
 # ---------- Debug toolbar ----------
+############################################################################
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 
 # ---------- Security (auto-on when DEBUG=0) ----------
@@ -248,8 +252,26 @@ if not DEBUG:
     )
     SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "0") == "1"
 
+############################################################################
 
-# UPDATE FOR TESTS ###############
+############################################################################
+# UPDATE FOR LOGGING
+############################################################################
+
+# Optional: cache pending logs before DB persistence (advanced)
+# DJANGO_FSM_LOG_STORAGE_METHOD = "django_fsm_log.backends.CachedBackend"
+# DJANGO_FSM_LOG_CACHE_BACKEND = "default"
+
+# Optional: disable logging for specific models
+# DJANGO_FSM_LOG_IGNORED_MODELS = ("third_party.models.SomeModel",)
+
+############################################################################
+
+
+############################################################################
+# UPDATE FOR TESTS
+############################################################################
+
 # Detect if we're running tests
 TESTING = any(arg in sys.argv for arg in ["test", "pytest"])
 
@@ -276,3 +298,5 @@ if TESTING:
 
     # 3) Remove debug toolbar app entirely in tests
     INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "debug_toolbar"]
+
+############################################################################

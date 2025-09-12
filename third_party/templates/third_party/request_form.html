@@ -1,11 +1,57 @@
 <!-- templates/third_party/request_form.html -->
-
 {% extends 'base_app.html' %}
-{% block content %}
-  <h2>Create Vendor Request</h2>
-  <form method="post" class="mt-3">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary">Create</button>
-  </form>
+
+{% block page_container %}
+  <div class="page-narrow-left">
+    <!-- Page title -->
+    <h1 class="h5 mb-4">Vendor Onboarding Request</h1>
+    <!-- Form card -->
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <!-- - p-4 = 1.5rem padding inside the card -->
+
+        <h2 class="h5 mb-3">New Request</h2>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- Name -->
+
+          <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {% if form.name.errors %}
+              <div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <!-- Description -->
+          <div class="mb-3">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if form.description.errors %}
+              <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <!-- Assignee -->
+          <div class="mb-1">
+            {{ form.assignee.label_tag }}
+            {{ form.assignee }}
+            {% if form.assignee.errors %}
+              <div class="invalid-feedback d-block">{{ form.assignee.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="form-text">
+            <i class="bi bi-shield-lock"></i>
+            Only the assignee (or staff) may advance or reject.
+          </div>
+          <!-- Submit buttons -->
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
+            <a href="{% url 'third_party:request_list' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -129,3 +129,103 @@ a:hover{ color:var(--vg-brand-600); }
 
 /* Cards, subtle premium */
 .card { border-radius: .75rem; }
+
+/* ---------- Workflow status bar (Stepper) ---------- */
+.vg-stepper {
+  background: var(--vg-surface);
+  border: 1px solid var(--vg-border);
+  border-radius: .75rem;
+  padding: .75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.vg-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .75rem;
+  align-items: center;
+}
+
+.vg-step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  border: 1px dashed var(--vg-border);
+  background: #fff;
+  color: var(--vg-ink-2);
+  font-weight: 500;
+}
+
+.vg-step i { font-size: 1rem; opacity: .9; }
+
+.vg-step--done {
+  border-style: solid;
+  border-color: #d1fae5;             /* green-100 */
+  background: #ecfdf5;               /* green-50  */
+  color: #065f46;                     /* green-800 */
+}
+
+.vg-step--active {
+  border-color: #c7d7ff;             /* blue-100 */
+  background: #eef4ff;               /* blue-50  */
+  color: #0b5ed7;                     /* brand-ish */
+  box-shadow: 0 0 0 2px rgba(37,99,235,.08) inset;
+}
+
+.vg-step .vg-step-label {
+  line-height: 1.1;
+}
+
+.vg-step .vg-step-sub {
+  display: block;
+  font-size: .75rem;
+  color: var(--vg-ink-2);
+}
+
+/* Connector line for large screens */
+@media (min-width: 992px){
+  .vg-step::after {
+    content: "";
+    position: absolute;
+    right: -0.75rem;
+    top: 50%;
+    width: .75rem;
+    height: 2px;
+    background: var(--vg-border);
+  }
+  .vg-steps > .vg-step:last-child::after { display:none; }
+}
+
+/* Rejected banner */
+.vg-rejected {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  background: #fff1f2;               /* rose-50  */
+  border: 1px solid #fecdd3;          /* rose-200 */
+  color: #9f1239;                     /* rose-800 */
+  margin-top: .5rem;
+  font-weight: 600;
+}
+
+
+
+/* Left-aligned narrow column for pages that shouldn't span full width */
+.page-narrow-left {
+  max-width: 720px;
+  padding: 1rem;          /* soft padding inside the container */
+  margin-left: 0;         /* stick to sidebar */
+}
+
+.page-narrow-left .card {
+  margin-top: 1rem;       /* space between heading and card */
+}
+
+.page-narrow-left h1 {
+  margin-bottom: 1rem;    /* give the page title some breathing room */
+}

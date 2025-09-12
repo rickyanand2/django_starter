@@ -1,32 +1,23 @@
 # third_party/admin.py
+"""
+Purpose
+-------
+Admin visibility with inlined transition history (django-fsm-log).
+
+Testability
+-----------
+- Admin loads with the inline attached.
+"""
+
 from django.contrib import admin
-from .models import VendorRequest
+from django_fsm_log.admin import StateLogInline
+from .models import ThirdPartyRequest
 
 
-@admin.register(VendorRequest)
-class VendorRequestAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "state", "created_by", "reviewer", "created_at")
-    list_filter = ("state", "created_by", "reviewer", "created_at")
-    search_fields = ("name", "description")
-    readonly_fields = ("state", "created_at", "updated_at", "reject_reason")
-    ordering = ("-created_at",)
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_staff:
-            return qs
-        return qs.filter(created_by=request.user)
-
-    def get_readonly_fields(self, request, obj=None):
-        if request.user.is_staff:
-            return self.readonly_fields
-        return self.readonly_fields + ("created_by", "assignee", "reviewer")
+@admin.register(ThirdPartyRequest)
+class ThirdPartyRequestAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "assignee", "state", "created_at")
+    list_filter = ("state",)
+    search_fields = ("name", "description", "assignee__email", "created_by__email")
+    readonly_fields = ("state", "reject_reason", "created_at", "updated_at")
+    inlines = [StateLogInline]
