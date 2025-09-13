@@ -2,6 +2,7 @@
 
 # Core
 Django>=5.2,<6
+<<<<<<< HEAD
 
 
 django-allauth>=65.11.1 # auth, social auth
@@ -20,12 +21,24 @@ django-htmx>=1.23.2 # htmx integration
 django-tenants>=3.6.1 # multi-tenancy support
 
 gunicorn>=23.0.0 # WSGI server
+=======
+django-allauth>=65.11.1
+psycopg[binary]>=3.2.9
+django-environ>=0.12.0
+dj-database-url>=3.0.1
+whitenoise>=6.9.0
+django-htmx>=1.23.2
+django-debug-toolbar>=6.0.0
+gunicorn>=23.0.0
+python-dotenv>=1.1.1
+>>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
 
 # Workflow
 django-fsm-2>=4.0.0
 django-fsm-log>=3.1.0   # install with constraints.txt to force -2 backend
 
 # Dev & test
+<<<<<<< HEAD
 django-debug-toolbar>=6.0.0 # debug toolbar for development
 pytest>=8.4.2 # testing framework
 pytest-django>=4.11.1 # Django integration for pytest
@@ -34,3 +47,12 @@ model-bakery>=1.20.5 # model factories for testing
 black>=25.1.0 # code formatter
 isort>=6.0.1 # import sorting
 flake8>=7.3.0 # linting
+=======
+pytest>=8.4.2
+pytest-django>=4.11.1
+pytest-cov>=6.3.0
+model-bakery>=1.20.5
+black>=25.1.0
+isort>=6.0.1
+flake8>=7.3.0
+>>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865

@@ -2,6 +2,10 @@
 
 from pathlib import Path
 import os
+<<<<<<< HEAD
+=======
+import dj_database_url
+>>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
 import sys
 
 # NEW: load .env early (if installed)
@@ -58,26 +62,42 @@ SHARED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.sites",
+<<<<<<< HEAD
+=======
+    # Third-party apps
+    "django_htmx",
+>>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
     # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+<<<<<<< HEAD
     "django_htmx",  # htmx integration
     # django-fsm-2
     "django_fsm",
     "django_fsm_log",
+=======
+    # Workflow apps
+    "django_fsm",  # django-fsm-2
+    "django_fsm_log",  # transition logging
+    # local apps
+>>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
     "core",
 ]
 TENANT_APPS = [
     # your per-tenant apps (add as you go)
     "accounts",
     "third_party",
+<<<<<<< HEAD
 ]
 INSTALLED_APPS = (SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]) + (
     ["debug_toolbar"] if DEBUG else []
 )
 
 # ---------- End Installed apps ----------
+=======
+] + (["debug_toolbar"] if DEBUG else [])
+>>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
 
 # ---------- Middleware ----------
 MIDDLEWARE = [
