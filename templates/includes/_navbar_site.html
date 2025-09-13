@@ -1,0 +1,31 @@
+{# templates/includes/_navbar_site.html #}
+{% load static %}
+<nav class="navbar navbar-expand-md bg-body border-bottom">
+  <div class="container">
+    <a class="navbar-brand fw-semibold" href="{% url 'core:home' %}">VendorGuard</a>
+
+    <div id="siteNav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}" href="{% url 'core:home' %}">Home</a>
+        </li>
+        {# Add marketing links here as needed #}
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="btn btn-primary" href="{% url 'third_party:request_list' %}">Open Dashboard</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary" href="{% url 'account_signup' %}">Get Started</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
