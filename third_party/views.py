@@ -25,11 +25,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django_fsm import TransitionNotAllowed
-
 from django_fsm_log.models import StateLog
 
-from .models import ThirdPartyRequest, RequestState
 from .forms import ThirdPartyRequestForm
+from .models import RequestState, ThirdPartyRequest
 
 
 def _can_transition(user, obj: ThirdPartyRequest) -> bool:
@@ -46,9 +45,7 @@ def request_list(request):
     All requests. Optional ?state= filter also supported.
     Template expects 'requests' not 'object_list'.
     """
-    qs = ThirdPartyRequest.objects.select_related("assignee", "created_by").order_by(
-        "-created_at"
-    )
+    qs = ThirdPartyRequest.objects.select_related("assignee", "created_by").order_by("-created_at")
     state = request.GET.get("state")
     if state:
         qs = qs.filter(state=state)

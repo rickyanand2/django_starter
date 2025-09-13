@@ -2,7 +2,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from django_fsm_log.models import StateLog
 
 from .models import ThirdPartyRequest

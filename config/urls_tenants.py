@@ -1,8 +1,8 @@
 # config/urls_tenants.py
-from django.contrib import admin
-from django.urls import path, include
-from django.views.generic import RedirectView
 from django.conf import settings
+from django.contrib import admin
+from django.urls import include, path
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),

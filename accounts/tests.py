@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 import pytest
 from django.contrib.auth import get_user_model
-from django.urls import reverse, NoReverseMatch
-from accounts.models import Profile
+from django.urls import NoReverseMatch, reverse
 
+from accounts.models import Profile
 
 # ---------- helpers ----------
 
@@ -44,9 +44,7 @@ def _relax_staticfiles_for_tests(settings):
     """
     Avoid 'Missing staticfiles manifest entry' during template renders in tests.
     """
-    settings.STATICFILES_STORAGE = (
-        "django.contrib.staticfiles.storage.StaticFilesStorage"
-    )
+    settings.STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
     settings.WHITENOISE_AUTOREFRESH = True
     settings.DEBUG = True
 
@@ -63,9 +61,7 @@ def test_allauth_routes_exist(client):
         ("account_logout", "Sign out"),
     ]:
         url = reverse_or_none(route_name)
-        assert (
-            url
-        ), f"Route {route_name} is not resolvable (is allauth included in urls.py?)"
+        assert url, f"Route {route_name} is not resolvable (is allauth included in urls.py?)"
         r = client.get(url, follow=False)
         assert r.status_code in (200, 302, 303)
         # Only assert HTML content if we actually rendered the page

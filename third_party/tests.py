@@ -1,12 +1,12 @@
 # third_party/tests.py
 import pytest
 from django.contrib.auth import get_user_model
-from django.urls import reverse, resolve
+from django.urls import resolve, reverse
 from django_fsm import TransitionNotAllowed
 from django_fsm_log.models import StateLog
 
-from .models import ThirdPartyRequest, RequestState
 from .forms import ThirdPartyRequestForm
+from .models import RequestState, ThirdPartyRequest
 
 User = get_user_model()
 
@@ -45,9 +45,7 @@ def _patch_staticfiles_storage(monkeypatch):
 @pytest.fixture(autouse=True)
 def _staticfiles_simple_storage(settings):
     # Use plain storage so missing manifest entries don't blow up rendering
-    settings.STATICFILES_STORAGE = (
-        "django.contrib.staticfiles.storage.StaticFilesStorage"
-    )
+    settings.STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
     # Optional: disable Debug Toolbar’s staticfiles panel effects (if present)
     settings.DEBUG = False
 
@@ -63,9 +61,7 @@ def _make_user(email: str, *, password: str = "x", is_staff: bool = False):
     if getattr(User, "USERNAME_FIELD", "username") == "email":
         return User.objects.create_user(email=email, password=password, **kwargs)
     username = email.split("@", 1)[0] or "user"
-    return User.objects.create_user(
-        username=username, email=email, password=password, **kwargs
-    )
+    return User.objects.create_user(username=username, email=email, password=password, **kwargs)
 
 
 @pytest.fixture()
@@ -103,17 +99,13 @@ def test_model_happy_path_submit_then_approve_logs_actor(req, user):
     req.submit_for_review(by=user)
     req.save()
     assert req.state == RequestState.REVIEW
-    assert (
-        StateLog.objects.for_(req).filter(state=RequestState.REVIEW, by=user).exists()
-    )
+    assert StateLog.objects.for_(req).filter(state=RequestState.REVIEW, by=user).exists()
 
     # Review -> Approved
     req.approve(by=user)
     req.save()
     assert req.state == RequestState.APPROVED
-    assert (
-        StateLog.objects.for_(req).filter(state=RequestState.APPROVED, by=user).exists()
-    )
+    assert StateLog.objects.for_(req).filter(state=RequestState.APPROVED, by=user).exists()
 
 
 @pytest.mark.django_db
@@ -125,9 +117,7 @@ def test_model_reject_requires_reason_and_logs(req, user):
     req.save()
     assert req.state == RequestState.REJECTED
     assert req.reject_reason == "Missing docs"
-    assert (
-        StateLog.objects.for_(req).filter(state=RequestState.REJECTED, by=user).exists()
-    )
+    assert StateLog.objects.for_(req).filter(state=RequestState.REJECTED, by=user).exists()
 
 
 @pytest.mark.django_db
@@ -159,10 +149,7 @@ def test_form_valid_with_assignee(user):
 
 def test_urlnames_resolve():
     assert resolve(reverse("third_party:request_list")).url_name == "request_list"
-    assert (
-        resolve(reverse("third_party:request_list_assigned")).url_name
-        == "request_list_assigned"
-    )
+    assert resolve(reverse("third_party:request_list_assigned")).url_name == "request_list_assigned"
     assert resolve(reverse("third_party:request_create")).url_name == "request_create"
     reverse("third_party:request_list")  # smoke
 
@@ -251,9 +238,7 @@ def test_list_views_filter_by_state(client, user, staff):
     assert resp.status_code == 200
     assert "R2" in resp.content.decode()
 
-    mine_url = (
-        reverse("third_party:request_list_assigned") + f"?state={RequestState.REVIEW}"
-    )
+    mine_url = reverse("third_party:request_list_assigned") + f"?state={RequestState.REVIEW}"
     resp = client.get(mine_url)
     assert resp.status_code == 200
     assert "R2" not in resp.content.decode()

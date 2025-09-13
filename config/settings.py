@@ -1,12 +1,8 @@
 # Django settings for a starter project.
 
-from pathlib import Path
 import os
-<<<<<<< HEAD
-=======
-import dj_database_url
->>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
 import sys
+from pathlib import Path
 
 # NEW: load .env early (if installed)
 try:
@@ -60,44 +56,32 @@ SHARED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.admin",
+    "django.contrib.admin",  # admin on public schema
     "django.contrib.sites",
-<<<<<<< HEAD
-=======
     # Third-party apps
     "django_htmx",
->>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
     # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-<<<<<<< HEAD
-    "django_htmx",  # htmx integration
-    # django-fsm-2
-    "django_fsm",
-    "django_fsm_log",
-=======
     # Workflow apps
     "django_fsm",  # django-fsm-2
     "django_fsm_log",  # transition logging
     # local apps
->>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
-    "core",
+    "core",  # tenant model
 ]
 TENANT_APPS = [
     # your per-tenant apps (add as you go)
     "accounts",
     "third_party",
-<<<<<<< HEAD
 ]
-INSTALLED_APPS = (SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]) + (
-    ["debug_toolbar"] if DEBUG else []
+
+INSTALLED_APPS = (
+    SHARED_APPS
+    + [a for a in TENANT_APPS if a not in SHARED_APPS]
+    + (["debug_toolbar"] if DEBUG else [])
 )
 
-# ---------- End Installed apps ----------
-=======
-] + (["debug_toolbar"] if DEBUG else [])
->>>>>>> 3a3d5cbed578680370a567c3324fd1ac68da4865
 
 # ---------- Middleware ----------
 MIDDLEWARE = [
@@ -148,10 +132,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django_tenants.postgresql_backend",
-        "NAME": os.getenv("POSTGRES_DB", "app"),
-        "USER": os.getenv("POSTGRES_USER", "app"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "app"),
-        "HOST": os.getenv("POSTGRES_HOST", "db"),
+        "NAME": os.getenv("POSTGRES_DB", "multitenant_db"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "4200"),
+        "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),
         "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
@@ -174,12 +158,16 @@ else:
 """
 DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
-PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
-ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
 
 # Tenant settings
 TENANT_MODEL = "core.Client"  # app.Model that contains the tenant info
 DOMAIN_MODEL = "core.Domain"  # app.Model for domain names
+TENANT_DOMAIN_MODEL = "core.Domain"
+
+PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
+ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
+
+
 # ---------- End Database ----------
 
 
@@ -247,9 +235,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    },
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
 }
 MEDIA_URL = "/media/"
@@ -263,9 +249,7 @@ MEDIAFILES_DIRS = [BASE_DIR / "media"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"
-)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") == "1"
@@ -292,12 +276,8 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = int(
-        os.getenv("SECURE_HSTS_SECONDS", "0")
-    )  # set to 31536000 in real prod
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = (
-        os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "0") == "1"
-    )
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))  # set to 31536000 in real prod
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "0") == "1"
     SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "0") == "1"
 
 ############################################################################
@@ -328,9 +308,7 @@ if TESTING:
     # (Django 4.2+/5.x STORAGES API)
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
-        },
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     }
 
     # 2) Strip middleware that depends on INSTALLED_APPS entries

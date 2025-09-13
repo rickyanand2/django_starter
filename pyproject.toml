@@ -1,0 +1,14 @@
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["core","accounts","third_party"]
+skip_gitignore = true
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203","W503","E501"]  # compatible with black
+exclude = [".venv","migrations","static","node_modules","__pycache__"]

@@ -15,6 +15,7 @@ Testability
 """
 
 from django import forms
+
 from .models import ThirdPartyRequest
 
 
@@ -38,6 +39,4 @@ class ThirdPartyRequestForm(forms.ModelForm):
                 field.widget.attrs["class"] = (css + " is-invalid").strip()
         # Optional: predictable ordering
         qs = self.fields["assignee"].queryset
-        self.fields["assignee"].queryset = qs.order_by(
-            "first_name", "last_name", "email"
-        )
+        self.fields["assignee"].queryset = qs.order_by("first_name", "last_name", "email")
