@@ -49,7 +49,7 @@ SITE_ID = int(os.getenv("SITE_ID", "1"))
 
 SHARED_APPS = [
     "django_tenants",  # must be first
-    "tenancy",  # app with the tenant model
+    
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -57,6 +57,7 @@ SHARED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.admin",  # admin on public schema
     "django.contrib.sites",
+    
     # Third-party apps
     "django_htmx",
     # Allauth (for auth)
@@ -66,10 +67,13 @@ SHARED_APPS = [
     # Workflow apps
     "django_fsm",  # django-fsm-2
     "django_fsm_log",  # transition logging
+    
     # local apps
+    "tenancy",  # app with the tenant model
     "core",  # Main website app
-    "accounts",
+    #"accounts",
 ]
+
 TENANT_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
@@ -90,9 +94,9 @@ TENANT_APPS = [
     
     # local apps
    
-    "core",  
-    "accounts",
     
+    #"accounts",
+    "core",  # website app
     # your per-tenant apps (add as you go)
     "third_party",
 
@@ -125,8 +129,7 @@ if DEBUG:
 # ---------- End Middleware ----------
 
 
-#
-ROOT_URLCONF = "config.urls"
+
 
 TEMPLATES = [
     {
@@ -189,6 +192,8 @@ SHOW_PUBLIC_IF_NO_TENANT_FOUND = True  # display public schema if no tenant foun
 
 PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
 ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
+
+#ROOT_URLCONF = "config.urls"
 
 
 # ---------- End Database ----------

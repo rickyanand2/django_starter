@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><title>Public</title></head>
+  <body>
+    <header><a href="{% url 'public_home' %}">Public Home</a> | <a href="{% url 'account_login' %}">Login</a></header>
+    <main>{% block content %}{% endblock %}</main>
+  </body>
+</html>

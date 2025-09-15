@@ -2,27 +2,25 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
+
+from tenancy.views import post_login_redirect, post_logout_redirect
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # Your tenant apps:
-    path(
-        "third-party/",
-        include(("third_party.urls", "third_party"), namespace="third_party"),
-    ),
-    path("accounts/", include("allauth.urls")),  # allauth
-    path(
-        "",
-        RedirectView.as_view(pattern_name="third_party:request_list", permanent=False),
-    ),
-    path("accounts/", include(("accounts.urls", "accounts"), namespace="accounts")),
-    # Default tenant landing:
-    path("", RedirectView.as_view(pattern_name="third_party:request_list", permanent=False)),
+    path("accounts/", include("allauth.urls")),
+    path("post-login/", post_login_redirect, name="post_login"),
+    path("post-logout/", post_logout_redirect, name="post_logout"),
+    path("", include("third_party.urls")),
+    
+    path("", include(("third_party.urls", "third_party"), namespace="third_party")),
+    # Optional: tenant team management (Phase 3)
+    # path("team/invite/", tenancy.views_invites.invite_view, name="tenant_invite"),
 ]
 
-# Optional: keep toolbar for tenant routes too (only in dev)
 if getattr(settings, "DEBUG", False) and not getattr(settings, "TESTING", False):
-    import debug_toolbar
-
-    urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
+    try:
+        import debug_toolbar  # noqa: F401
+    except Exception:
+        pass
+    else:
+        urlpatterns += [path("__debug__/", include("debug_toolbar.urls"))]

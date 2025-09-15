@@ -8,8 +8,15 @@ Naming: Names are stable, short, and used by templates and redirects.
 from django.urls import path
 
 from . import views
+from django.shortcuts import render
+from tenancy.guards import require_membership
+
 
 app_name = "third_party"
+
+@require_membership("member")
+def dashboard(request):
+    return render(request, "third_party/dashboard.html")
 
 urlpatterns = [
     # Browsing

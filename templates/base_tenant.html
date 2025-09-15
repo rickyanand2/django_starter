@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><title>Tenant</title></head>
+  <body>
+    <header><a href="{% url 'tenant_dashboard' %}">Dashboard</a> | <a href="{% url 'account_logout' %}">Logout</a></header>
+    <main>{% block content %}{% endblock %}</main>
+  </body>
+</html>
