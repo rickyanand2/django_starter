@@ -25,3 +25,6 @@ model-bakery
 black
 isort
 flake8
+
+pillow # Image processing
+djlint # Code formatting for Django templates

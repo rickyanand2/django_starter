@@ -31,11 +31,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-change-me")
 
 
 # UPDATED ###############
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if h.strip()
-]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,*").split(",")
+
+#
 
 
 # ADDED ###############
@@ -51,6 +49,7 @@ SITE_ID = int(os.getenv("SITE_ID", "1"))
 
 SHARED_APPS = [
     "django_tenants",  # must be first
+    "tenancy",  # app with the tenant model
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -68,25 +67,45 @@ SHARED_APPS = [
     "django_fsm",  # django-fsm-2
     "django_fsm_log",  # transition logging
     # local apps
-    "core",  # tenant model
+    "core",  # Main website app
+    "accounts",
 ]
 TENANT_APPS = [
-    # your per-tenant apps (add as you go)
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.admin",  # admin on public schema
+    "django.contrib.sites",
+    # Third-party apps
+    "django_htmx",
+    # Allauth (for auth)
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    # Workflow apps
+    "django_fsm",  # django-fsm-2
+    "django_fsm_log",  # transition logging
+    
+    # local apps
+   
+    "core",  
     "accounts",
+    
+    # your per-tenant apps (add as you go)
     "third_party",
+
 ]
 
-INSTALLED_APPS = (
-    SHARED_APPS
-    + [a for a in TENANT_APPS if a not in SHARED_APPS]
-    + (["debug_toolbar"] if DEBUG else [])
+INSTALLED_APPS = (list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]) + (
+    ["debug_toolbar"] if DEBUG else []
 )
 
 
 # ---------- Middleware ----------
 MIDDLEWARE = [
-    # Must be first for django-tenants
-    "django_tenants.middleware.main.TenantMainMiddleware",
+    "django_tenants.middleware.main.TenantMainMiddleware",  # Must be first for django-tenants
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -120,10 +139,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Custom context processors
+                "tenancy.context_processors.branding",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -160,9 +182,10 @@ DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
 
 # Tenant settings
-TENANT_MODEL = "core.Client"  # app.Model that contains the tenant info
-DOMAIN_MODEL = "core.Domain"  # app.Model for domain names
-TENANT_DOMAIN_MODEL = "core.Domain"
+TENANT_MODEL = "tenancy.Client"  # app.Model that contains the tenant info
+TENANT_DOMAIN_MODEL = "tenancy.Domain"  # app.Model for domain names
+SHOW_PUBLIC_IF_NO_TENANT_FOUND = True  # display public schema if no tenant found
+# URL routing
 
 PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
 ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
@@ -207,6 +230,8 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 
 # ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "optional")
 ACCOUNT_EMAIL_VERIFICATION = "none"
+
+
 
 # Login redirect URL
 LOGIN_URL = "account_login"
