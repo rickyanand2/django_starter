@@ -8,18 +8,13 @@ from django.utils import timezone
 class Client(TenantMixin):
     
     name = models.CharField(max_length=200)
-    # Unique schema name (identifier)
-
     user_limit = models.PositiveIntegerField(default=5)
     
     # Client branding (keep it optional for now)
-
     logo = models.ImageField(upload_to="branding/", blank=True, null=True)
     brand_color = models.CharField(max_length=7, blank=True)  # "#RRGGBB"
-
-    created_on = models.DateTimeField(default=timezone.now)
-    # auto create schema on save
-    auto_create_schema = True
+    created_on = models.DateTimeField(default=timezone.now)    
+    auto_create_schema = True # auto create schema on save
 
     def __str__(self):
         return f"{self.name} ({self.schema_name})"
@@ -35,20 +30,12 @@ class MembershipState(models.TextChoices):
     ADMIN = "ADMIN", "Admin"
     MEMBER = "MEMBER", "Member"
     
-    
-    
-    
-    
-    
-
 class Membership(models.Model):
     
     # Link to the user (from AUTH_USER_MODEL)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="memberships")
-    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="memberships")    
     # Links a user to a client with a specific role 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="memberships")
-    
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="memberships")    
     # Membership state
     role = models.CharField(max_length=10, choices=MembershipState.choices, default=MembershipState.MEMBER)
     

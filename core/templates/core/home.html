@@ -47,16 +47,7 @@
 
         {% if user.is_authenticated %}
         <div class="d-flex flex-wrap gap-2">
-          <a
-            class="btn btn-primary btn-lg"
-            href="{% url 'third_party:request_list' %}"
-            >Go to Dashboard</a
-          >
-          <a
-            class="btn btn-outline-secondary btn-lg"
-            href="{% url 'third_party:request_create' %}"
-            >New Vendor Request</a
-          >
+          <p><a href="{% url 'post_login' %}">Go to my tenant</a> or <a href="{% url 'signup_org' %}">Create organisation</a></p>
         </div>
         {% else %}
         <div class="d-flex flex-wrap gap-2">
@@ -73,11 +64,7 @@
       </div>
 
       <div class="col-lg-6 text-center">
-        <img
-          src="{% static 'img/hero-dashboard.png' %}"
-          alt="Vendor risk dashboard preview"
-          class="img-fluid rounded-4 shadow-sm border"
-        />
+        <img src="{% static 'img/hero-dashboard.png' %}" alt="Vendor risk dashboard preview" class="img-fluid rounded-4 shadow-sm border" width="900" height="600" />
       </div>
     </div>
   </div>
@@ -245,13 +232,6 @@
         Start free. No credit card required.
       </p>
 
-      {% if user.is_authenticated %}
-      <a
-        href="{% url 'third_party:request_create' %}"
-        class="btn btn-primary btn-lg"
-        >Create Your First Vendor Request</a
-      >
-      {% else %}
       <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg me-2"
         >Create Account</a
       >
@@ -260,7 +240,7 @@
         class="btn btn-outline-secondary btn-lg"
         >Log In</a
       >
-      {% endif %}
+
     </div>
   </div>
 </section>

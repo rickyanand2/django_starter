@@ -1,0 +1,5 @@
+{% extends "base_public.html" %}
+{% block content %}
+<h1>Create organisation</h1>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button>Create</button></form>
+{% endblock %}

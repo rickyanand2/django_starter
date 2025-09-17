@@ -20,12 +20,12 @@
   <body>
     <nav class="navbar navbar-expand-md site-navbar sticky-top">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:home' %}"><img src="{% static 'img/logo-mark.svg' %}" height="22" alt="" /><span>VendorGuard</span></a>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:public_home' %}"><img src="{% static 'img/logo-mark.svg' %}" height="22" alt="" /><span>VendorGuard</span></a>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#siteNav"><span class="navbar-toggler-icon"></span></button>
         <div id="siteNav" class="collapse navbar-collapse">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <a class="nav-link {% if request.resolver_match and request.resolver_match.namespace == 'core' %}active{% endif %}" href="{% url 'core:home' %}">Home</a>
+              <a class="nav-link {% if request.resolver_match and request.resolver_match.namespace == 'core' %}active{% endif %}" href="{% url 'core:public_home' %}">Home</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto align-items-center gap-2">

@@ -33,9 +33,6 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-change-me")
 # UPDATED ###############
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,*").split(",")
 
-#
-
-
 # ADDED ###############
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.getenv("DJANGO_CSRF_TRUSTED", "").split(",") if o.strip()
@@ -44,12 +41,19 @@ CSRF_TRUSTED_ORIGINS = [
 # ADDED ###############
 SITE_ID = int(os.getenv("SITE_ID", "1"))
 
+# --- Domains & env for URL building (KISS) ---
+BASE_DOMAIN = os.getenv("BASE_DOMAIN", "localhost")   # apex/public, e.g. "yourapp.com" or "localhost"
+DEV_PORT = os.getenv("DEV_PORT", "8000")              # runserver port in dev
+DEFAULT_SCHEME = "https" if not DEBUG else "http"
 
-# ---------- Installed apps ----------
+
+# ---------- apps ----------
 
 SHARED_APPS = [
     "django_tenants",  # must be first
+    "tenancy",  # app with the tenant model
     
+    # Django Apps
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -60,18 +64,18 @@ SHARED_APPS = [
     
     # Third-party apps
     "django_htmx",
+
     # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    
     # Workflow apps
     "django_fsm",  # django-fsm-2
     "django_fsm_log",  # transition logging
-    
-    # local apps
-    "tenancy",  # app with the tenant model
+       
     "core",  # Main website app
-    #"accounts",
+   
 ]
 
 TENANT_APPS = [
@@ -82,21 +86,19 @@ TENANT_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.admin",  # admin on public schema
     "django.contrib.sites",
+
     # Third-party apps
     "django_htmx",
+
     # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+
     # Workflow apps
     "django_fsm",  # django-fsm-2
     "django_fsm_log",  # transition logging
-    
-    # local apps
-   
-    
-    #"accounts",
-    "core",  # website app
+
     # your per-tenant apps (add as you go)
     "third_party",
 
@@ -105,30 +107,6 @@ TENANT_APPS = [
 INSTALLED_APPS = (list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]) + (
     ["debug_toolbar"] if DEBUG else []
 )
-
-
-# ---------- Middleware ----------
-MIDDLEWARE = [
-    "django_tenants.middleware.main.TenantMainMiddleware",  # Must be first for django-tenants
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    # REQUIRED by allauth
-    "allauth.account.middleware.AccountMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # Third-party middleware
-    "django_htmx.middleware.HtmxMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-]
-
-if DEBUG:
-    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
-# ---------- End Middleware ----------
-
-
 
 
 TEMPLATES = [
@@ -144,6 +122,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # Custom context processors
                 "tenancy.context_processors.branding",
+                "tenancy.context_processors.is_public",
             ],
         },
     },
@@ -181,8 +160,6 @@ else:
         }
     }
 """
-DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
-
 
 # Tenant settings
 TENANT_MODEL = "tenancy.Client"  # app.Model that contains the tenant info
@@ -191,13 +168,41 @@ SHOW_PUBLIC_IF_NO_TENANT_FOUND = True  # display public schema if no tenant foun
 # URL routing
 
 PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
-ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
+TENANT_BASE_URLCONF = "config.urls_tenants"    # tenant hosts
 
+# Default URLConf (django-tenants will swap it per request)
+ROOT_URLCONF = "config.urls_public"
+
+
+# Old
 #ROOT_URLCONF = "config.urls"
+
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
 
 
 # ---------- End Database ----------
 
+# ---------- Middleware ----------
+MIDDLEWARE = [
+    "django_tenants.middleware.main.TenantMainMiddleware",  # Must be first for django-tenants
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # REQUIRED by allauth
+    "allauth.account.middleware.AccountMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Third-party middleware
+    "django_htmx.middleware.HtmxMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+]
+
+if DEBUG:
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+# ---------- End Middleware ----------
 
 """
 # Password validation
@@ -236,24 +241,19 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 # ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "optional")
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-
-
 # Login redirect URL
 LOGIN_URL = "account_login"
-LOGIN_REDIRECT_URL = "third_party:request_list"  # after login → app shell
+LOGIN_REDIRECT_URL = "/post-login/"  # after login → app shell
 # Logout redirect URL
-LOGOUT_REDIRECT_URL = "core:home"
+LOGOUT_REDIRECT_URL = "/post-logout/"
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "Australia/Melbourne"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -297,11 +297,10 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 """
 
 ############################################################################
-# ---------- Debug toolbar ----------
+# ---------- Security (auto-on when DEBUG=0) ----------
 ############################################################################
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 
-# ---------- Security (auto-on when DEBUG=0) ----------
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
@@ -309,19 +308,6 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))  # set to 31536000 in real prod
     SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "0") == "1"
     SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "0") == "1"
-
-############################################################################
-
-############################################################################
-# UPDATE FOR LOGGING
-############################################################################
-
-# Optional: cache pending logs before DB persistence (advanced)
-# DJANGO_FSM_LOG_STORAGE_METHOD = "django_fsm_log.backends.CachedBackend"
-# DJANGO_FSM_LOG_CACHE_BACKEND = "default"
-
-# Optional: disable logging for specific models
-# DJANGO_FSM_LOG_IGNORED_MODELS = ("third_party.models.SomeModel",)
 
 ############################################################################
 
@@ -342,11 +328,7 @@ if TESTING:
     }
 
     # 2) Strip middleware that depends on INSTALLED_APPS entries
-    MIDDLEWARE = [
-        mw
-        for mw in MIDDLEWARE
-        if mw
-        not in (
+    MIDDLEWARE = [ mw for mw in MIDDLEWARE if mw not in (
             "whitenoise.middleware.WhiteNoiseMiddleware",
             "debug_toolbar.middleware.DebugToolbarMiddleware",
         )
@@ -354,5 +336,17 @@ if TESTING:
 
     # 3) Remove debug toolbar app entirely in tests
     INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "debug_toolbar"]
+
+############################################################################
+############################################################################
+# UPDATE FOR LOGGING
+############################################################################
+
+# Optional: cache pending logs before DB persistence (advanced)
+# DJANGO_FSM_LOG_STORAGE_METHOD = "django_fsm_log.backends.CachedBackend"
+# DJANGO_FSM_LOG_CACHE_BACKEND = "default"
+
+# Optional: disable logging for specific models
+# DJANGO_FSM_LOG_IGNORED_MODELS = ("third_party.models.SomeModel",)
 
 ############################################################################
