@@ -8,8 +8,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("post-login/", post_login_redirect, name="post_login"),
-    path("post-logout/", post_logout_redirect, name="post_logout"),
-    path("", include("third_party.urls")),    
+    path("post-logout/", post_logout_redirect, name="post_logout"),       
     path("", include(("third_party.urls", "third_party"), namespace="third_party")),
 ]
 

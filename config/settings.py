@@ -39,7 +39,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # ADDED ###############
-SITE_ID = int(os.getenv("SITE_ID", "1"))
+SITE_ID = int(os.getenv("SITE_ID", "1")) # public site id; tenant sites will override per schema if needed
 
 # --- Domains & env for URL building (KISS) ---
 BASE_DOMAIN = os.getenv("BASE_DOMAIN", "localhost")   # apex/public, e.g. "yourapp.com" or "localhost"
@@ -51,9 +51,9 @@ DEFAULT_SCHEME = "https" if not DEBUG else "http"
 
 SHARED_APPS = [
     "django_tenants",  # must be first
-    "tenancy",  # app with the tenant model
+    "tenancy",  # app with the tenant model | # Client/Domain + provisioning
     
-    # Django Apps
+    # Django core
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -65,20 +65,20 @@ SHARED_APPS = [
     # Third-party apps
     "django_htmx",
 
-    # Allauth (for auth)
+    # Allauth (for auth) - public
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
-    
-    # Workflow apps
-    "django_fsm",  # django-fsm-2
-    "django_fsm_log",  # transition logging
-       
+    #"allauth.socialaccount", # We do NOT include socialaccount anywhere
+  
+      
     "core",  # Main website app
-   
+    "accounts",     # allauth adapters/forms, our profile pages, staff/admin tools
+          
 ]
 
+# Apps that live inside each tenant schema (per-tenant)
 TENANT_APPS = [
+    # Django core inside tenant
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -90,10 +90,10 @@ TENANT_APPS = [
     # Third-party apps
     "django_htmx",
 
-    # Allauth (for auth)
+    # Auth (Allauth) - tenant-facing login/flows (feature-gated to enterprise later)
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
+
 
     # Workflow apps
     "django_fsm",  # django-fsm-2
@@ -101,6 +101,8 @@ TENANT_APPS = [
 
     # your per-tenant apps (add as you go)
     "third_party",
+    # Future (next stage)
+    # "assessments",   # will hold NIST/PCI/custom questionnaires later
 
 ]
 
@@ -168,14 +170,10 @@ SHOW_PUBLIC_IF_NO_TENANT_FOUND = True  # display public schema if no tenant foun
 # URL routing
 
 PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
-TENANT_BASE_URLCONF = "config.urls_tenants"    # tenant hosts
-
-# Default URLConf (django-tenants will swap it per request)
-ROOT_URLCONF = "config.urls_public"
+# django-tenants will swap it per request
+ROOT_URLCONF = "config.urls_tenants" # tenant hosts
 
 
-# Old
-#ROOT_URLCONF = "config.urls"
 
 DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
