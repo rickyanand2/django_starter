@@ -1,66 +1,38 @@
-{# templates/account/login.html #}
-{% extends "base.html" %}
-{% load i18n form_extras %}
-{% block title %}Sign in{% endblock %}
+{% extends 'base_auth.html' %}
+{% load i18n ui_extras %}
+
+{% block title %}
+  {% trans 'Login' %}– VendorGuard
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-  <div class="row g-4 align-items-stretch">
-    <div class="col-12 col-lg-5 d-flex">
-      <div class="card glass shadow-sm p-3 p-lg-4 flex-grow-1 hover-lift">
-        <h1 class="h3 mb-3">{% trans "Sign in" %}</h1>
-
-        <form method="post" action="{% url 'account_login' %}" x-data="{ show:false }" novalidate>
-          {% csrf_token %}
-          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
-
-          <div class="mb-3">
-            <label class="form-label">{% trans "Email" %}</label>
-            {{ form.login|add_class:"form-control" }}
-            {{ form.login.errors }}
-          </div>
-
-          <div class="mb-2">
-            <label class="form-label d-flex justify-content-between align-items-center">
-              <span>{% trans "Password" %}</span>
-              <a class="small" href="{% url 'account_reset_password' %}">{% trans "Forgot your password?" %}</a>
-            </label>
-            <div class="input-group">
-              <input :type="show ? 'text' : 'password'" name="{{ form.password.html_name }}"
-                     class="form-control" autocomplete="current-password" required>
-              <button class="btn btn-outline-secondary" type="button" @click="show=!show">
-                <i class="bi" :class="show ? 'bi-eye-slash' : 'bi-eye'"></i>
-              </button>
-            </div>
-            {{ form.password.errors }}
-          </div>
-
-          {% if form.remember %}
-          <div class="form-check my-3">
-            {{ form.remember|add_class:"form-check-input" }}
-            <label class="form-check-label" for="{{ form.remember.id_for_label }}">{% trans "Remember me" %}</label>
-          </div>
-          {% endif %}
-
-          <button class="btn btn-primary w-100" type="submit">{% trans "Sign in" %}</button>
-        </form>
-
-        <hr class="my-4">
-        <p class="mb-0">{% trans "No account?" %} <a href="{% url 'account_signup' %}">{% trans "Sign up" %}</a></p>
-      </div>
+  <h1 class="h4 mb-3">{% trans 'Welcome back' %}</h1>
+  <form method="post" action="{% url 'account_login' %}" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="mb-3">
+      <label class="form-label" for="id_login">{% trans 'Email' %}</label>
+      {{ form.login|add_class:'form-control' }}
+      {{ form.login.errors }}
     </div>
-
-    <!-- right panel -->
-    <div class="col-12 col-lg-7">
-      <div class="p-4 p-lg-5 glass shadow-sm h-100">
-        <h2 class="h4 section-title mb-3">Why VendorGuard?</h2>
-        <div class="row g-3">
-          <div class="col-sm-6"><div class="p-3 border rounded-4 h-100 hover-lift"><i class="bi bi-shield-lock me-2 text-primary"></i>Auto risk scoring</div></div>
-          <div class="col-sm-6"><div class="p-3 border rounded-4 h-100 hover-lift"><i class="bi bi-file-earmark-text me-2 text-primary"></i>PDF-ready reports</div></div>
-          <div class="col-sm-6"><div class="p-3 border rounded-4 h-100 hover-lift"><i class="bi bi-journal-check me-2 text-primary"></i>Smart questionnaires</div></div>
-          <div class="col-sm-6"><div class="p-3 border rounded-4 h-100 hover-lift"><i class="bi bi-clipboard-data me-2 text-primary"></i>Audit-ready logs</div></div>
-        </div>
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="id_password">{% trans 'Password' %}</label>
+      {{ form.password|add_class:'form-control' }}
+      {{ form.password.errors }}
     </div>
-  </div>
-</div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="form-check">
+        {{ form.remember|add_class:'form-check-input' }}
+        <label class="form-check-label" for="id_remember">{% trans 'Remember me' %}</label>
+      </div>
+      <a class="small" href="{% url 'account_reset_password' %}">{% trans 'Forgot password?' %}</a>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">{% trans 'Log in' %}</button>
+  </form>
+{% endblock %}
+
+{% block undercard %}
+  <p class="text-center small mt-3">
+    {% trans 'New here?' %} <a href="{% url 'account_signup' %}">{% trans 'Create an account' %}</a>
+  </p>
 {% endblock %}

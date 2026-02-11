@@ -1,0 +1,12 @@
+{# third_party/includes/_phase_badge.html #}
+{% if obj.state == 'ONBOARDING' %}
+  <span class="badge text-bg-secondary">Draft</span>
+{% elif obj.state == 'REVIEW' %}
+  <span class="badge text-bg-info">Review</span>
+{% elif obj.state == 'APPROVED' %}
+  <span class="badge text-bg-success">Approved</span>
+{% elif obj.state == 'REJECTED' %}
+  <span class="badge text-bg-danger">Rejected</span>
+{% else %}
+  <span class="badge text-bg-light border-soft">Unknown</span>
+{% endif %}

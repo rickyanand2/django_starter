@@ -1,8 +1,8 @@
 # Django settings for a starter project.
 
-from pathlib import Path
 import os
-import dj_database_url
+import sys
+from pathlib import Path
 
 # NEW: load .env early (if installed)
 try:
@@ -31,11 +31,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-change-me")
 
 
 # UPDATED ###############
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if h.strip()
-]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,*").split(",")
+
+#
 
 
 # ADDED ###############
@@ -49,27 +47,65 @@ SITE_ID = int(os.getenv("SITE_ID", "1"))
 
 # ---------- Installed apps ----------
 
-INSTALLED_APPS = [
-    # Django apps
-    "django.contrib.admin",
-    "django.contrib.auth",
+SHARED_APPS = [
+    "django_tenants",  # must be first
+    "tenancy",  # app with the tenant model
     "django.contrib.contenttypes",
+    "django.contrib.auth",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.admin",  # admin on public schema
     "django.contrib.sites",
     # Third-party apps
     "django_htmx",
+    # Allauth (for auth)
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    # Workflow apps
+    "django_fsm",  # django-fsm-2
+    "django_fsm_log",  # transition logging
     # local apps
-    "core",
+    "core",  # Main website app
     "accounts",
-] + (["debug_toolbar"] if DEBUG else [])
+]
+TENANT_APPS = [
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.admin",  # admin on public schema
+    "django.contrib.sites",
+    # Third-party apps
+    "django_htmx",
+    # Allauth (for auth)
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    # Workflow apps
+    "django_fsm",  # django-fsm-2
+    "django_fsm_log",  # transition logging
+    
+    # local apps
+   
+    "core",  
+    "accounts",
+    
+    # your per-tenant apps (add as you go)
+    "third_party",
+
+]
+
+INSTALLED_APPS = (list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]) + (
+    ["debug_toolbar"] if DEBUG else []
+)
+
 
 # ---------- Middleware ----------
 MIDDLEWARE = [
+    "django_tenants.middleware.main.TenantMainMiddleware",  # Must be first for django-tenants
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -103,20 +139,37 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Custom context processors
+                "tenancy.context_processors.branding",
             ],
         },
     },
 ]
 
+
 WSGI_APPLICATION = "config.wsgi.application"
 
 
 # ---------- Database ----------
+DATABASES = {
+    "default": {
+        "ENGINE": "django_tenants.postgresql_backend",
+        "NAME": os.getenv("POSTGRES_DB", "multitenant_db"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "4200"),
+        "HOST": os.getenv("POSTGRES_HOST", "127.0.0.1"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+    }
+}
+
+""" 
+# Working database with sqlite fallback
 
 # Use dj_database_url to parse the DATABASE_URL environment variable
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if DATABASE_URL:
     DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+
 else:
     DATABASES = {
         "default": {
@@ -124,6 +177,19 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+"""
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+
+
+# Tenant settings
+TENANT_MODEL = "tenancy.Client"  # app.Model that contains the tenant info
+TENANT_DOMAIN_MODEL = "tenancy.Domain"  # app.Model for domain names
+SHOW_PUBLIC_IF_NO_TENANT_FOUND = True  # display public schema if no tenant found
+# URL routing
+
+PUBLIC_SCHEMA_URLCONF = "config.urls_public"  # For public schema
+ROOT_URLCONF = "config.urls_tenants"  # For tenant schemas
+
 
 # ---------- End Database ----------
 
@@ -165,10 +231,13 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 # ACCOUNT_EMAIL_VERIFICATION = os.getenv("ACCOUNT_EMAIL_VERIFICATION", "optional")
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
+
+
 # Login redirect URL
-LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "third_party:request_list"  # after login → app shell
 # Logout redirect URL
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "core:home"
 
 
 # Internationalization
@@ -191,9 +260,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    },
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
 }
 MEDIA_URL = "/media/"
@@ -207,9 +274,7 @@ MEDIAFILES_DIRS = [BASE_DIR / "media"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"
-)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") == "1"
@@ -226,7 +291,9 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "0") == "1"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 """
 
+############################################################################
 # ---------- Debug toolbar ----------
+############################################################################
 INTERNAL_IPS = ["127.0.0.1", "localhost"]
 
 # ---------- Security (auto-on when DEBUG=0) ----------
@@ -234,10 +301,53 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = int(
-        os.getenv("SECURE_HSTS_SECONDS", "0")
-    )  # set to 31536000 in real prod
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = (
-        os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "0") == "1"
-    )
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))  # set to 31536000 in real prod
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "0") == "1"
     SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "0") == "1"
+
+############################################################################
+
+############################################################################
+# UPDATE FOR LOGGING
+############################################################################
+
+# Optional: cache pending logs before DB persistence (advanced)
+# DJANGO_FSM_LOG_STORAGE_METHOD = "django_fsm_log.backends.CachedBackend"
+# DJANGO_FSM_LOG_CACHE_BACKEND = "default"
+
+# Optional: disable logging for specific models
+# DJANGO_FSM_LOG_IGNORED_MODELS = ("third_party.models.SomeModel",)
+
+############################################################################
+
+
+############################################################################
+# UPDATE FOR TESTS
+############################################################################
+
+# Detect if we're running tests
+TESTING = any(arg in sys.argv for arg in ["test", "pytest"])
+
+if TESTING:
+    # 1) Use non-manifest static storage so tests don't need collectstatic
+    # (Django 4.2+/5.x STORAGES API)
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+
+    # 2) Strip middleware that depends on INSTALLED_APPS entries
+    MIDDLEWARE = [
+        mw
+        for mw in MIDDLEWARE
+        if mw
+        not in (
+            "whitenoise.middleware.WhiteNoiseMiddleware",
+            "debug_toolbar.middleware.DebugToolbarMiddleware",
+        )
+    ]
+
+    # 3) Remove debug toolbar app entirely in tests
+    INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "debug_toolbar"]
+
+############################################################################

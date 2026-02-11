@@ -1,0 +1,16 @@
+{% extends 'base_app.html' %}
+{% block app_title %}
+  New Vendor Request
+{% endblock %}
+{% block content %}
+  <form method="post" class="card">
+    <div class="card-body">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">Vendor name</label>
+        <input type="text" name="name" class="form-control" placeholder="Acme Pty Ltd" />
+      </div>
+      <button class="btn btn-primary">Create</button>
+    </div>
+  </form>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% load static %}
+<nav class="navbar navbar-expand-md sticky-top" :class="theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-white shadow-sm'">
+  <div class="container-fluid px-3 px-lg-4">
+    <button class="btn btn-outline-secondary d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar"><i class="bi bi-list"></i></button>
+
+    <a class="navbar-brand fw-semibold" href="{% url 'core:home' %}"><img src="{% static 'img/logo.svg' %}" width="24" height="24" class="me-2" alt="" /> VendorGuard</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#appTopbar"><span class="navbar-toggler-icon"></span></button>
+
+    <div id="appTopbar" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match and request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}">Home</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown"><i class="bi bi-person-circle me-1"></i> {{ user.first_name|default:user.username }}</a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'account_email' %}">Email</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'account_change_password' %}">Password</a>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="btn btn-primary" href="{% url 'account_login' %}">Login</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+  {# Mobile offcanvas sidebar #}
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      {% include 'includes/_sidebar_app.html' %}
+    </div>
+  </div>
+</nav>
